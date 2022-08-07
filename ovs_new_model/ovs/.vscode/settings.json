@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "*.inc": "cpp",
+    "*.tcc": "cpp",
+    "functional": "cpp"
+  }
+}
