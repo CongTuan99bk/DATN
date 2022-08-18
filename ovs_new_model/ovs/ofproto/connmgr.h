@@ -76,6 +76,7 @@ struct ofproto_async_msg {
 void reset_packet_in_counter(void);
 int get_packet_in_counter(void);
 long flow_max_training;
+long count_syn;
 ///////////////////////////
 ////SD-OVS///////////////
 struct psuedo_header
