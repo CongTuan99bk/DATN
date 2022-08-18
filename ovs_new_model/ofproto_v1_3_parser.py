@@ -348,8 +348,8 @@ class OFPAnomalyDetection(MsgBase):
         super(OFPAnomalyDetection, self).__init__(datapath)
         self.data = data
         subprocess.call(["/home/iot_team/DATN/timeRecord.sh"])
-        flag = datapath.ofproto_parser.OFPFlag(datapath)
-        datapath.send_msg(flag)
+        #flag = datapath.ofproto_parser.OFPFlag(datapath)
+        #datapath.send_msg(flag)
 
     @classmethod
     def parser(cls, datapath, version, msg_type, msg_len, xid, buf):
@@ -358,6 +358,9 @@ class OFPAnomalyDetection(MsgBase):
         msg = super(OFPAnomalyDetection, cls).parser(datapath, version, msg_type,
                                                 msg_len, xid, buf)
         msg.data = msg.buf[ofproto.OFP_HEADER_SIZE:]
+        if msg.data == "2" :
+            flag = datapath.ofproto_parser.OFPFlag(datapath)
+            datapath.send_msg(flag)
         # payload11 = msg.data
         # print(f"Port 1 S1:",msg.data)
         with open("/home/iot_team/6sw_fil_master/6sw_test/result/data11.txt", "a+") as f:
