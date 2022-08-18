@@ -39,7 +39,6 @@ extern "C" {
 
 //////////////flags for sd-ovs///////
 bool flagSDOVS;
-long flow_max_training;
 
 struct bfd_cfg;
 struct cfm_settings;
