@@ -1944,9 +1944,10 @@ void connmgr_send_anomaly_detection(struct connmgr *mgr)
     {
         enum ofputil_protocol protocol = ofconn_get_protocol(ofconn);
         struct ofpbuf *msg = ofputil_encode_anomaly_detection(protocol);
-        // size_t a =8;
+        size_t a =1;
+	if (count_syn > flow_max_training)
+	    ofpbuf_put(msg,"2",a);
         // ofpbuf_put_hex(msg,readline(fp),*n);
-        // ofpbuf_put(msg,readline(fp),a);
         ofconn_send(ofconn, msg, NULL);
     }
     // fclose(fp);
@@ -1983,7 +1984,8 @@ connmgr_send_table_status(struct connmgr *mgr,
 }
 
 // #define DEBUG
- 
+ count_syn = 0;
+time_t last_time = 0;
 /* Given 'pin', sends an OFPT_PACKET_IN message to each OpenFlow controller as
  * necessary according to their individual configurations. */
 void
@@ -2004,7 +2006,6 @@ connmgr_send_async_msg(struct connmgr *mgr,
     // struct flow_stats *h;
     unsigned char *message;
     unsigned char hash[SHA256_DIGEST_LENGTH];  //256 bit  = 32 byte
-  
     bool check = true;
     bool Syn_ack = false;
     int hash_value[10];       // gia tri hash_value have 40byte
@@ -2015,7 +2016,7 @@ connmgr_send_async_msg(struct connmgr *mgr,
     flow_extract(&pkt, &header);
     // dport = header.tp_src;
     // temp = header.tcp_flags;
-
+    
 
     // if (!flagSDOVS)
     // {
@@ -2212,7 +2213,7 @@ connmgr_send_async_msg(struct connmgr *mgr,
     // //  if(!((htons(header.tcp_flags) == 16) || (header.tcp_flags == 512) || (header.tcp_flags == 1024)))
   
 
-
+    time_t current_time=time(NULL);
     if (check ==  true)
     {
 
@@ -2237,7 +2238,18 @@ connmgr_send_async_msg(struct connmgr *mgr,
                       am->pin.up.base.flow_metadata.flow.in_port.ofp_port,
                       msg, &txq);
         do_send_packet_ins(ofconn, &txq);
-        
+	if(is_miss)
+        	if(header.tcp_flags == 512) //if captured packet is SYN
+			if (current_time - last_time < 1)
+			{
+			   count_syn++;
+	 		  
+			}
+		        else
+			{
+				last_time = current_time;
+				count_syn = 0;
+			}
         /////////////////count dem so packet entry moi
         if(is_miss) count_packet_in++;
     }
