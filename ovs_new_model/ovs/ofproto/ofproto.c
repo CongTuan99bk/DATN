@@ -1803,7 +1803,7 @@ ofproto_type_wait(const char *datapath_type)
     }
 }
 
-
+flow_max_training = 0;
 ///////////////////////////////////
 void abnormal_detect(struct ofproto *p)
 {
@@ -1861,6 +1861,8 @@ void abnormal_detect(struct ofproto *p)
         if(fp==NULL || p->writing == 1)
         {
           p->writing=1;
+          if (current_flow > flow_max_training)
+              flow_max_training = current_flow;
           fp=fopen("/home/iot_team/DATN/OvS-LoOP/result/training.log","a+");
           if (current_flow !=0 && current_traf !=0)
           fprintf(fp, "%f,%f\n",current_flow,current_traf);
